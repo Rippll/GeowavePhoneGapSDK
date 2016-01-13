@@ -1,0 +1,109 @@
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="com.rippll.geowavesdk"
+        version="5.1.0">
+
+    <name>Geowave SDK</name>
+    <description>Geowave SDK PhoneGap Plugin</description>
+    <author>Rippll Ltd.</author>
+
+    <js-module src="www/geowave.js" name="geowave">
+        <clobbers target="geowave" />
+    </js-module>
+
+    <dependency id="cordova-plugin-device" />
+    <dependency id="de.appplant.cordova.plugin.background-mode" />
+
+    <platform name="ios">
+
+        <config-file target="config.xml" parent="/*">
+            <feature name="GeowavePlugin">
+                <param name="ios-package" value="GeowavePlugin" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="UIBackgroundModes">
+            <array>
+                <string>remote-notification</string>
+            </array>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="NSAppTransportSecurity">
+            <dict>
+                <key>NSAllowsArbitraryLoads</key>
+                <true/>
+            </dict>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
+            <string>We'll use it to give you news and updates about your local club.</string>
+        </config-file>
+
+        <header-file src="src/ios/GeowavePlugin.h" />
+        <source-file src="src/ios/GeowavePlugin.m" />
+
+        <header-file src="src/ios/AppDelegate+geowave.h" />
+        <source-file src="src/ios/AppDelegate+geowave.m" />
+
+        <header-file src="src/ios/Geowave.h" />
+        <source-file src="src/ios/libGeowaveSDK.a" framework="true" />
+
+    </platform>
+
+    <platform name="android">
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="GeowavePlugin">
+                <param name="android-package" value="com.rippll.geowavesdk.GeowavePlugin" />
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-sdk tools:overrideLibrary="org.apache.cordova,com.library.plugin" />
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+            <uses-permission android:name="android.permission.WAKE_LOCK" />
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+            <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+            <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+            <permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+            <uses-permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" />
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <receiver
+                android:name="com.google.android.gms.gcm.GcmReceiver"
+                android:exported="true"
+                android:permission="com.google.android.c2dm.permission.SEND">
+
+                <intent-filter>
+                    <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                    <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                    <category android:name="$PACKAGE_NAME" />
+                </intent-filter>
+            </receiver>
+
+            <service
+                android:name="com.rippll.geowavesdk.MyGcmListenerService"
+                android:exported="false">
+
+                <intent-filter>
+                    <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                </intent-filter>
+            </service>
+        </config-file>
+
+        <framework src="com.android.support:support-v4:+" />
+        <framework src="com.google.android.gms:play-services-gcm:7.5.0" />
+        <framework src="com.google.android.gms:play-services-location:7.5.0" />
+        <framework src="com.google.android.gms:play-services-ads:7.5.0" />
+
+        <source-file src="src/android/com/rippll/geowavesdk/GeowavePlugin.java" target-dir="src/com/rippll/geowavesdk" />
+        <source-file src="src/android/com/rippll/geowavesdk/MyGcmListenerService.java" target-dir="src/com/rippll/geowavesdk" />
+
+        <source-file src="src/android/libs/Geowave.jar" target-dir="libs" />
+
+    </platform>
+
+</plugin>
